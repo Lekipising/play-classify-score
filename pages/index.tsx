@@ -52,6 +52,7 @@ const possibleChoices = [
 
 export default function IndexPage() {
   const [gameStarted, setGameStarted] = useState(false);
+  const [showChoices, setShowChoices] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -66,7 +67,9 @@ export default function IndexPage() {
     // send data to server
     setProcessing(true);
 
-    const imagePath = preloadImages.filter((img) => img.name === selectedImage);
+    const imagePath = preloadImages.filter(
+      (img) => img.name === selectedImage.name,
+    );
     console.log(imagePath);
 
     if (imagePath.length > 0) {
@@ -133,10 +136,10 @@ export default function IndexPage() {
           )}
         </div>
         {/* preloaded images */}
-        {gameStarted && (
-          <div className="flex flex-col gap-4 fixed left-[5%]">
+        {gameStarted && !showChoices && (
+          <div className="flex gap-4 slideUp flex-col">
             <h2 className="font-semibold text-lg">Choose image</h2>
-            <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
               {preloadImages.map((img) => (
                 <OneImage
                   key={img.id}
@@ -144,20 +147,21 @@ export default function IndexPage() {
                   name={img.name}
                   dimensions={{ height: img.height, width: img.width }}
                   setSelectedImage={() => {
-                    setSelectedImage(img.name);
+                    setSelectedImage(img);
+                    setShowChoices(true);
                   }}
-                  isActivated={selectedImage === img.name}
+                  isActivated={selectedImage?.name === img.name}
                 />
               ))}
             </div>
           </div>
         )}
         {/* game components */}
-        {gameStarted && (
-          <section className="h-max slideUp w-max flex gap-8">
+        {showChoices && (
+          <section className="h-max relative slideUp w-max flex gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="font-semibold text-lg">
-                Select highest likelyhood object
+                Select most prominent object from the selected image
               </h2>
               <div className="grid grid-cols-5 gap-4">
                 {possibleChoices.map((txt, i) => (
@@ -179,6 +183,31 @@ export default function IndexPage() {
                 ))}
               </div>
             </div>
+            {selectedImage && (
+              <div className="absolute right-1/2 translate-x-1/2 -top-32">
+                <div className="relative rounded-[10px] w-[100px] h-[100px]">
+                  <Image
+                    className="rounded-[10px] object-cover object-center"
+                    fill
+                    src={selectedImage.image}
+                    alt={selectedImage.name}
+                  />
+                </div>
+              </div>
+            )}
+            {correctAnswer && (
+              <button
+                onClick={() => {
+                  setShowChoices(false);
+                  setSelectedImage(null);
+                  setSelectedText(null);
+                  setCorrectAnswer(null);
+                }}
+                className="bg-[#2b2a2a] font-semibold border-green-500 border-2 absolute right-1/2 translate-x-1/2 -bottom-20 text-white px-8 py-2 rounded-lg"
+              >
+                Try again
+              </button>
+            )}
             <div className="flex justify-center mt-8 flex-col items-end">
               {/* legend */}
               <div className="flex gap-2">
@@ -212,12 +241,11 @@ function OneImage({
   return (
     <div
       onClick={() => setSelectedImage()}
-      className="relative rounded-[10px] max-h-[200px]"
+      className="relative rounded-[10px] w-[200px] h-[200px]"
     >
       <Image
         className="rounded-[10px] object-cover object-center"
-        width={200}
-        height={200}
+        fill
         src={image}
         alt={name}
       />
