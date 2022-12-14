@@ -1,12 +1,16 @@
-# A starter project for Next JS, Tailwind CSS, and TypeScript
+# Welcome to Play & Classify
 
-Quickly get started with Next JS, Tailwind CSS, and TypeScript with this starter project.
+This a simple and fun app to play with recognizing objects in images.
 
-## Tools
-- [Next JS](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [ESLint](https://eslint.org/)
-- [Prettier](https://prettier.io/)
-- [Husky](https://typicode.github.io/husky/#/)
-- [Commitlint](https://commitlint.js.org/#/)
+
+## How it works
+The user is presented with a number of predefined images where they are supposed to pick the most prominent object in the image. The user can then see how well they did and see the correct answer.
+
+## Purpose
+The purpose of this app is to provide an easy way to practice recognizing objects in images. It is intended to be used by people who are learning about image recognition. It is also meant to be used by people who want to have fun with image recognition.
+
+## Gif of the app in action
+<!-- ![Gif of the app in action]() -->
+
+## Visit the app and Play!
+[Play & Classify](https://play-classify-score.vercel.app/)
