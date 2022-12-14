@@ -5,9 +5,110 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+html,
+body {
+  margin: 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: none;
+  font-family: "Fira Code", monospace;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  background: radial-gradient(
+    circle at 24.1% 68.8%,
+    rgb(50, 50, 50) 0%,
+    rgb(0, 0, 0) 99.4%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+* {
+  scrollbar-color: #cf021a #fff;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+input,
+textarea {
+  outline: 0;
+  border: 0;
+}
+
+input:focus,
+textarea:focus {
+  outline: 0;
+  border: 0;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span {
+  line-height: 120.4%;
+  letter-spacing: -0.02em;
+}
+
+.gradient-btn {
+  background: linear-gradient(
+    179.96deg,
+    rgba(255, 255, 255, 0.25) 0.04%,
+    rgba(87, 177, 255, 0) 130.08%
+  );
+}
+
+.slideUp {
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.shadow-me {
+  box-shadow: rgba(221, 160, 221, 0.2) 0px 2px 24px;
 }
