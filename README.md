@@ -22,7 +22,7 @@ The user is presented with a number of predefined images where they are supposed
 The purpose of this app is to provide an easy way to practice recognizing objects in images. It is intended to be used by people who are learning about image recognition. It is also meant to be used by people who want to have fun with image recognition.
 
 ## Video of the app in action
-<!-- ![Gif of the app in action]() -->
+[![Play & Classify](/public/poster.png)](/public/video.webm)
 
 ## Visit the app and Play!
 [Play & Classify](https://play-classify-score.vercel.app/)

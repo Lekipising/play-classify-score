@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const preloadImages = [
   {
@@ -63,52 +64,56 @@ export default function IndexPage() {
   const [correctAnswer, setCorrectAnswer] = useState(null);
 
   const sendData = async () => {
-    setCorrectAnswer(null);
-    // send data to server
-    setProcessing(true);
+    try {
+      setCorrectAnswer(null);
+      // send data to server
+      setProcessing(true);
 
-    const imagePath = preloadImages.filter(
-      (img) => img.name === selectedImage.name,
-    );
-    console.log(imagePath);
-
-    if (imagePath.length > 0) {
-      const res = await axios.post(
-        process.env.NODE_ENV === "development"
-          ? `http://127.0.0.1:5000/detect`
-          : `https://play-api.onrender.com/detect`,
-        { id: imagePath[0].image.split("/")[1] },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Control-Allow-Origin": "*",
-          },
-        },
+      const imagePath = preloadImages.filter(
+        (img) => img.name === selectedImage.name,
       );
 
-      console.log(res.data.results);
-      const obj = res.data.results;
+      if (imagePath.length > 0) {
+        const res = await axios.post(
+          process.env.NODE_ENV === "development"
+            ? `http://127.0.0.1:5000/detect`
+            : `https://play-api.onrender.com/detect`,
+          { id: imagePath[0].image.split("/")[1] },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Control-Allow-Origin": "*",
+            },
+          },
+        );
 
-      const sortable = [];
-      for (const vehicle in obj) {
-        sortable.push([vehicle, parseFloat(obj[vehicle])]);
+        const obj = res.data.results;
+
+        const sortable = [];
+        for (const vehicle in obj) {
+          sortable.push([vehicle, parseFloat(obj[vehicle])]);
+        }
+
+        sortable.sort(function (a, b) {
+          return a[1] - b[1];
+        });
+
+        setCorrectAnswer(sortable[sortable.length - 1][0]);
+
+        setProcessing(false);
       }
-
-      sortable.sort(function (a, b) {
-        return a[1] - b[1];
-      });
-
-      console.log(sortable[sortable.length - 1][0]);
-      setCorrectAnswer(sortable[sortable.length - 1][0]);
-
+    } catch (error) {
       setProcessing(false);
+      toast.error(
+        "The API is currently down. Please try again in a few minutes",
+      );
     }
   };
 
   return (
     <>
       <Head>
-        <title>Welcome</title>
+        <title>Welcome and Play!</title>
       </Head>
       <main
         className={`text-white justify-center items-center relative min-h-screen flex-col gap-32 flex py-32 px-16 `}
