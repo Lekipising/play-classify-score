@@ -1,6 +1,9 @@
+/* eslint-disable no-undef */
 import Head from "next/head";
 import Image from "next/image";
 import React, { useState } from "react";
+
+import axios from "axios";
 
 const preloadImages = [
   {
@@ -56,13 +59,47 @@ export default function IndexPage() {
 
   const [processing, setProcessing] = useState(false);
 
+  const [correctAnswer, setCorrectAnswer] = useState(null);
+
   const sendData = async () => {
+    setCorrectAnswer(null);
     // send data to server
     setProcessing(true);
-    // eslint-disable-next-line no-undef
-    setTimeout(() => {
+
+    const imagePath = preloadImages.filter((img) => img.name === selectedImage);
+    console.log(imagePath);
+
+    if (imagePath.length > 0) {
+      const res = await axios.post(
+        process.env.NODE_ENV === "development"
+          ? `http://127.0.0.1:5000/detect`
+          : `https://play-api.onrender.com/detect`,
+        { id: imagePath[0].image.split("/")[1] },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Control-Allow-Origin": "*",
+          },
+        },
+      );
+
+      console.log(res.data.results);
+      const obj = res.data.results;
+
+      const sortable = [];
+      for (const vehicle in obj) {
+        sortable.push([vehicle, parseFloat(obj[vehicle])]);
+      }
+
+      sortable.sort(function (a, b) {
+        return a[1] - b[1];
+      });
+
+      console.log(sortable[sortable.length - 1][0]);
+      setCorrectAnswer(sortable[sortable.length - 1][0]);
+
       setProcessing(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -117,7 +154,7 @@ export default function IndexPage() {
         )}
         {/* game components */}
         {gameStarted && (
-          <section className="h-max slideUp w-max flex flex-col gap-8">
+          <section className="h-max slideUp w-max flex gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="font-semibold text-lg">
                 Select highest likelyhood object
@@ -136,12 +173,22 @@ export default function IndexPage() {
                       }, 300);
                     }}
                     processing={selectedText === txt ? processing : false}
+                    isCorrect={correctAnswer === txt}
+                    postProcess={!!correctAnswer}
                   />
                 ))}
               </div>
             </div>
-            <div className="flex flex-col gap-4">
-              <h2 className="font-semibold text-lg">Upload video</h2>
+            <div className="flex justify-center mt-8 flex-col items-end">
+              {/* legend */}
+              <div className="flex gap-2">
+                <span>Correct answer:</span>
+                <div className="bg-green-500 h-4 w-8 rounded-md" />
+              </div>
+              <div className="flex gap-2">
+                <span>Wrong answer:</span>
+                <div className="bg-red-500 h-4 w-8 rounded-md" />
+              </div>
             </div>
           </section>
         )}
@@ -201,23 +248,31 @@ function OneChoice({
   isSelected,
   selectItem,
   processing,
+  isCorrect,
+  postProcess,
 }: {
   name: string;
   isSelected: boolean;
   selectItem: () => void;
   processing: boolean;
+  isCorrect: boolean;
+  postProcess: boolean;
 }) {
   return (
     <div
       onClick={() => {
-        if (!processing) {
-          selectItem();
-        }
+        selectItem();
       }}
-      className={`p-6 rounded-[40px] transition-all ease-in duration-300 cursor-pointer shadow-lg flex justify-center items-center font-bold ${
-        isSelected
-          ? "bg-purple-500 text-white scale-105 shadow-me"
-          : "bg-white text-[#2b2a2a]"
+      className={`p-6 bg-white text-[#2b2a2a] rounded-[40px] transition-all ease-in duration-300 cursor-pointer shadow-lg flex justify-center items-center font-bold ${
+        postProcess
+          ? isCorrect
+            ? `bg-green-500 text-white`
+            : `${
+                isSelected ? `bg-red-500 text-white` : `bg-white text-[#2b2a2a]`
+              }`
+          : isSelected
+          ? `scale-105 shadow-me`
+          : ``
       }`}
     >
       <h3>
@@ -238,7 +293,7 @@ function OneChoice({
             ></circle>
             <path
               className=""
-              fill="#fff"
+              fill="#2b2a2a"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
